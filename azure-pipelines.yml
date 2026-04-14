@@ -1,19 +1,98 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  branches:
+    include:
+      - main
 
-pool:
-  vmImage: ubuntu-latest
+pr:
+  branches:
+    include:
+      - main
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables:
+  buildConfiguration: "Release"
+  sdkVersion: "10.0.x"
+  webProject: "MyWishList.Web.csproj"
+  testProject: "MyWishList.Web.Tests/MyWishList.Web.Tests.csproj"
+  publishDir: "$(Build.ArtifactStagingDirectory)/publish"
+  azureSubscription: "CHANGE_ME_SERVICE_CONNECTION"
+  appName: "mywishlist-68210"
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+stages:
+  - stage: BuildAndTest
+    displayName: Build and test
+    jobs:
+      - job: Build
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - task: UseDotNet@2
+            displayName: "Install .NET SDK"
+            inputs:
+              packageType: "sdk"
+              version: "$(sdkVersion)"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Restore"
+            inputs:
+              command: "restore"
+              projects: "$(webProject)"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build"
+            inputs:
+              command: "build"
+              projects: "$(webProject)"
+              arguments: "--configuration $(buildConfiguration) --no-restore"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Test"
+            inputs:
+              command: "test"
+              projects: "$(testProject)"
+              arguments: "--configuration $(buildConfiguration) --no-build"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Publish app"
+            inputs:
+              command: "publish"
+              publishWebProjects: false
+              projects: "$(webProject)"
+              arguments: "--configuration $(buildConfiguration) --output $(publishDir)"
+              zipAfterPublish: true
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish pipeline artifact"
+            inputs:
+              PathtoPublish: "$(publishDir)"
+              ArtifactName: "drop"
+              publishLocation: "Container"
+
+  - stage: Deploy
+    displayName: Deploy to Azure App Service
+    dependsOn: BuildAndTest
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: DeployWeb
+        displayName: Deploy web app
+        environment: "production"
+        pool:
+          vmImage: "ubuntu-latest"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadBuildArtifacts@1
+                  displayName: "Download artifact"
+                  inputs:
+                    buildType: "current"
+                    downloadType: "single"
+                    artifactName: "drop"
+                    downloadPath: "$(System.ArtifactsDirectory)"
+
+                - task: AzureWebApp@1
+                  displayName: "Deploy to App Service"
+                  inputs:
+                    azureSubscription: "$(azureSubscription)"
+                    appType: "webApp"
+                    appName: "$(appName)"
+                    package: "$(System.ArtifactsDirectory)/drop/**/*.zip"
