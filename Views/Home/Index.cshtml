@@ -1,0 +1,54 @@
+﻿@model MyWishList.Web.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">My Wishlists</h1>
+        <p class="text-muted mb-0">Create lists and track items you want.</p>
+    </div>
+</div>
+
+@if (TempData["FeedbackMessage"] is string feedbackMessage)
+{
+    var feedbackType = TempData["FeedbackType"] as string ?? "info";
+    <div class="alert alert-@feedbackType" role="alert">@feedbackMessage</div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5">Create a new wishlist</h2>
+        <form asp-controller="Wishlists" asp-action="Create" method="post" class="row g-2">
+            @Html.AntiForgeryToken()
+            <div class="col-md-8">
+                <input name="Name" class="form-control" placeholder="Birthday 2026, Baby Registry, etc." required />
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">Create Wishlist</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!Model.Wishlists.Any())
+{
+    <div class="alert alert-info">No wishlists yet. Create your first one above.</div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var wishlist in Model.Wishlists)
+        {
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="h5">@wishlist.Name</h3>
+                        <p class="text-muted">Items: @wishlist.ItemCount</p>
+                        <a class="btn btn-outline-primary" asp-controller="Wishlists" asp-action="Details" asp-route-id="@wishlist.Id">Open Wishlist</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,38 @@
+using Microsoft.EntityFrameworkCore;
+using MyWishList.Web.Models;
+
+namespace MyWishList.Web.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    {
+    }
+
+    public DbSet<User> Users => Set<User>();
+    public DbSet<Wishlist> Wishlists => Set<Wishlist>();
+    public DbSet<Item> Items => Set<Item>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
+        modelBuilder.Entity<Wishlist>()
+            .HasOne(w => w.User)
+            .WithMany(u => u.Wishlists)
+            .HasForeignKey(w => w.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Item>()
+            .HasOne(i => i.Wishlist)
+            .WithMany(w => w.Items)
+            .HasForeignKey(i => i.WishlistId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
