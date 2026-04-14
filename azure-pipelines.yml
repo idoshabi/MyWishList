@@ -14,7 +14,6 @@ variables:
   webProject: "MyWishList.Web.csproj"
   testProject: "MyWishList.Web.Tests/MyWishList.Web.Tests.csproj"
   publishDir: "$(Build.ArtifactStagingDirectory)/publish"
-  azureSubscription: "CHANGE_ME_SERVICE_CONNECTION"
   appName: "mywishlist-68210"
 
 stages:
