@@ -28,14 +28,21 @@ ASP.NET Core MVC wishlist app (MyRegistry-style MVP) using SQL Server.
 - SQL Server (LocalDB default connection)
 - Cookie authentication
 
-## Run
+## Run (Backend + React Frontend)
 
-1. Restore and build:
-   - `dotnet restore`
-   - `dotnet build`
-2. Start app:
+1. Start backend API + MVC host:
    - `dotnet run`
-3. Open:
-   - `http://localhost:5000` or `https://localhost:5001` (per launch settings)
+   - default HTTP URL: `http://localhost:5167`
+2. In a second terminal, start React UI:
+   - `cd frontend`
+   - `npm install`
+   - `npm run dev`
+3. Open the React app:
+   - `http://localhost:5173`
 
-The app currently uses `Database.EnsureCreated()` at startup to create tables automatically.
+The React dev server proxies `/api/*` requests to `http://localhost:5167`.
+
+## Build
+
+- Backend: `dotnet build`
+- Frontend: `cd frontend && npm run build`

@@ -7,3 +7,6 @@ obj/
 *.jfm
 *.pfx
 *.publishsettings
+frontend/node_modules/
+frontend/dist/
+artifacts/

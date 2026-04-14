@@ -1,15 +1,14 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MyWishList.Web.Data;
-using MyWishList.Web.Models;
 using MyWishList.Web.Models.ViewModels;
+using MyWishList.Web.Services;
+using MyWishList.Web.Services.Models;
 
 namespace MyWishList.Web.Controllers;
 
 [Authorize]
-public class WishlistsController(AppDbContext dbContext) : Controller
+public class WishlistsController(IWishlistService wishlistService, IItemService itemService) : Controller
 {
     private const string FeedbackTypeKey = "FeedbackType";
     private const string FeedbackMessageKey = "FeedbackMessage";
@@ -30,17 +29,15 @@ public class WishlistsController(AppDbContext dbContext) : Controller
             return RedirectToAction("Login", "Account");
         }
 
-        var wishlist = new Wishlist
+        var result = await wishlistService.CreateAsync(userId.Value, model.Name);
+        if (!result.Succeeded)
         {
-            Name = model.Name.Trim(),
-            UserId = userId.Value
-        };
-
-        dbContext.Wishlists.Add(wishlist);
-        await dbContext.SaveChangesAsync();
+            SetFeedback("danger", result.ErrorMessage ?? "Couldn't create wishlist.");
+            return RedirectToAction("Index", "Home");
+        }
 
         SetFeedback("success", "Wishlist created.");
-        return RedirectToAction(nameof(Details), new { id = wishlist.Id });
+        return RedirectToAction(nameof(Details), new { id = result.WishlistId });
     }
 
     [HttpGet]
@@ -52,10 +49,7 @@ public class WishlistsController(AppDbContext dbContext) : Controller
             return RedirectToAction("Login", "Account");
         }
 
-        var wishlist = await dbContext.Wishlists
-            .Include(w => w.Items)
-            .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId.Value);
-
+        var wishlist = await wishlistService.GetDetailsAsync(userId.Value, id);
         if (wishlist is null)
         {
             return NotFound();
@@ -63,10 +57,9 @@ public class WishlistsController(AppDbContext dbContext) : Controller
 
         var model = new WishlistDetailsViewModel
         {
-            WishlistId = wishlist.Id,
-            WishlistName = wishlist.Name,
+            WishlistId = wishlist.WishlistId,
+            WishlistName = wishlist.WishlistName,
             Items = wishlist.Items
-                .OrderByDescending(i => i.Id)
                 .Select(i => new ItemSummary
                 {
                     Id = i.Id,
@@ -90,29 +83,29 @@ public class WishlistsController(AppDbContext dbContext) : Controller
             return RedirectToAction("Login", "Account");
         }
 
-        var wishlist = await dbContext.Wishlists.FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId.Value);
-        if (wishlist is null)
-        {
-            return NotFound();
-        }
-
         if (!ModelState.IsValid)
         {
             SetFeedback("danger", "Couldn't add item. Please check the form values.");
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        var item = new Item
+        var result = await itemService.AddToWishlistAsync(userId.Value, id, new CreateItemCommand
         {
-            WishlistId = id,
-            ProductName = model.ProductName.Trim(),
-            Link = string.IsNullOrWhiteSpace(model.Link) ? null : model.Link.Trim(),
-            Merchant = string.IsNullOrWhiteSpace(model.Merchant) ? null : model.Merchant.Trim(),
-            Type = string.IsNullOrWhiteSpace(model.Type) ? null : model.Type.Trim()
-        };
+            ProductName = model.ProductName,
+            Link = model.Link,
+            Merchant = model.Merchant,
+            Type = model.Type
+        });
+        if (!result.Succeeded)
+        {
+            if (string.Equals(result.ErrorMessage, "Wishlist not found.", StringComparison.Ordinal))
+            {
+                return NotFound();
+            }
 
-        dbContext.Items.Add(item);
-        await dbContext.SaveChangesAsync();
+            SetFeedback("danger", result.ErrorMessage ?? "Couldn't add item.");
+            return RedirectToAction(nameof(Details), new { id });
+        }
 
         SetFeedback("success", "Item added.");
         return RedirectToAction(nameof(Details), new { id });

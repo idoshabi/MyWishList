@@ -2,16 +2,16 @@ using System.Diagnostics;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MyWishList.Web.Data;
 using MyWishList.Web.Models;
 using MyWishList.Web.Models.ViewModels;
+using MyWishList.Web.Services;
 
 namespace MyWishList.Web.Controllers;
 
-public class HomeController(AppDbContext dbContext) : Controller
+public class HomeController(IWishlistService wishlistService) : Controller
 {
     [Authorize]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId))
@@ -19,17 +19,16 @@ public class HomeController(AppDbContext dbContext) : Controller
             return RedirectToAction("Login", "Account");
         }
 
+        var wishlistSummaries = await wishlistService.GetDashboardWishlistsAsync(userId);
         var model = new DashboardViewModel
         {
-            Wishlists = dbContext.Wishlists
-                .Where(w => w.UserId == userId)
+            Wishlists = wishlistSummaries
                 .Select(w => new WishlistSummary
                 {
                     Id = w.Id,
                     Name = w.Name,
-                    ItemCount = w.Items.Count
+                    ItemCount = w.ItemCount
                 })
-                .OrderByDescending(w => w.Id)
                 .ToList()
         };
 
