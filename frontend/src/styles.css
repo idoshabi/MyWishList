@@ -179,7 +179,7 @@ a {
 }
 
 .create-row {
-  grid-template-columns: 1fr auto;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .wishlist-grid {
@@ -199,6 +199,7 @@ a {
 .link-chip {
   display: inline-block;
   margin-top: 0.4rem;
+  margin-right: 0.4rem;
   text-decoration: none;
   color: #cae3ff;
 }
@@ -243,6 +244,10 @@ td {
 
 .muted {
   color: #bfc2d5;
+}
+
+.small {
+  font-size: 0.85rem;
 }
 
 @media (max-width: 900px) {

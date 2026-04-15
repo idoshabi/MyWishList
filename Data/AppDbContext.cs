@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Wishlist> Wishlists => Set<Wishlist>();
     public DbSet<Item> Items => Set<Item>();
+    public DbSet<CashContribution> CashContributions => Set<CashContribution>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,9 +25,31 @@ public class AppDbContext : DbContext
             .IsUnique();
 
         modelBuilder.Entity<Wishlist>()
+            .HasIndex(w => w.ShareToken)
+            .IsUnique();
+
+        modelBuilder.Entity<Wishlist>()
+            .Property(w => w.CashFundGoal)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Wishlist>()
+            .Property(w => w.CashFundRaised)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Wishlist>()
             .HasOne(w => w.User)
             .WithMany(u => u.Wishlists)
             .HasForeignKey(w => w.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<CashContribution>()
+            .Property(c => c.Amount)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<CashContribution>()
+            .HasOne(c => c.Wishlist)
+            .WithMany(w => w.CashContributions)
+            .HasForeignKey(c => c.WishlistId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Item>()

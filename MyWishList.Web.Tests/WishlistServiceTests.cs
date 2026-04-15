@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using MyWishList.Web.Services;
+using MyWishList.Web.Services.Models;
 
 namespace MyWishList.Web.Tests;
 
@@ -14,7 +15,12 @@ public class WishlistServiceTests(TestWebApplicationFactory factory) : IClassFix
         using var scope = factory.Services.CreateScope();
         var wishlistService = scope.ServiceProvider.GetRequiredService<IWishlistService>();
 
-        var createResult = await wishlistService.CreateAsync(user.Id, "Birthday");
+        var createResult = await wishlistService.CreateAsync(user.Id, new CreateWishlistCommand
+        {
+            Name = "Birthday",
+            RegistryType = "Birthday",
+            Visibility = "Public"
+        });
         Assert.True(createResult.Succeeded);
         Assert.True(createResult.WishlistId > 0);
 

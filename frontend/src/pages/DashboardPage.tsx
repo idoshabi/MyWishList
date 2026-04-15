@@ -9,6 +9,9 @@ export function DashboardPage({ context }: { context: AuthContextValue }) {
   const [loading, setLoading] = useState(true);
   const [wishlists, setWishlists] = useState<WishlistSummary[]>([]);
   const [name, setName] = useState("");
+  const [registryType, setRegistryType] = useState("General");
+  const [visibility, setVisibility] = useState<"Public" | "Private">("Private");
+  const [cashFundGoal, setCashFundGoal] = useState("");
   const [busy, setBusy] = useState(false);
 
   async function loadWishlists() {
@@ -30,8 +33,16 @@ export function DashboardPage({ context }: { context: AuthContextValue }) {
     setBusy(true);
     context.setNotice(null);
     try {
-      await api.createWishlist({ name });
+      await api.createWishlist({
+        name,
+        registryType,
+        visibility,
+        cashFundGoal: cashFundGoal ? Number(cashFundGoal) : undefined,
+      });
       setName("");
+      setRegistryType("General");
+      setVisibility("Private");
+      setCashFundGoal("");
       context.setNotice({ kind: "success", message: "Wishlist created successfully." });
       await loadWishlists();
     } catch {
@@ -59,6 +70,35 @@ export function DashboardPage({ context }: { context: AuthContextValue }) {
           placeholder="Create a new wishlist (Birthday 2026...)"
           required
         />
+        <select
+          className="input"
+          value={registryType}
+          onChange={(event) => setRegistryType(event.target.value)}
+        >
+          <option value="General">General</option>
+          <option value="Wedding">Wedding</option>
+          <option value="Baby">Baby</option>
+          <option value="Birthday">Birthday</option>
+          <option value="Housewarming">Housewarming</option>
+          <option value="Nonprofit">Nonprofit</option>
+        </select>
+        <select
+          className="input"
+          value={visibility}
+          onChange={(event) => setVisibility(event.target.value as "Public" | "Private")}
+        >
+          <option value="Private">Private</option>
+          <option value="Public">Public</option>
+        </select>
+        <input
+          className="input"
+          type="number"
+          min="0"
+          step="0.01"
+          value={cashFundGoal}
+          onChange={(event) => setCashFundGoal(event.target.value)}
+          placeholder="Cash goal (optional)"
+        />
         <button className="btn-primary" type="submit" disabled={busy}>
           {busy ? "Creating..." : "Create"}
         </button>
@@ -74,10 +114,24 @@ export function DashboardPage({ context }: { context: AuthContextValue }) {
         {wishlists.map((wishlist) => (
           <article key={wishlist.id} className="wishlist-card">
             <h3>{wishlist.name}</h3>
-            <p>{wishlist.itemCount} items</p>
+            <p>{wishlist.registryType} - {wishlist.itemCount} items</p>
+            <p className="muted small">{wishlist.visibility} list</p>
+            {wishlist.visibility === "Public" ? (
+              <p className="muted small">Share: <code>{wishlist.shareToken}</code></p>
+            ) : null}
+            {wishlist.cashFundGoal ? (
+              <p className="muted small">
+                Cash fund: ${wishlist.cashFundRaised.toFixed(0)} / ${wishlist.cashFundGoal.toFixed(0)}
+              </p>
+            ) : null}
             <Link to={`/wishlists/${wishlist.id}`} className="link-chip">
               Open Wishlist
             </Link>
+            {wishlist.visibility === "Public" ? (
+              <Link to={`/shared/${wishlist.shareToken}`} className="link-chip">
+                Open Public View
+              </Link>
+            ) : null}
           </article>
         ))}
       </div>

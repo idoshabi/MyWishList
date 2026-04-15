@@ -17,3 +17,32 @@ public sealed class CreateItemCommand
     public string? Merchant { get; init; }
     public string? Type { get; init; }
 }
+
+public sealed class CreateWishlistCommand
+{
+    public string Name { get; init; } = string.Empty;
+    public string RegistryType { get; init; } = "General";
+    public string Visibility { get; init; } = "Private";
+    public decimal? CashFundGoal { get; init; }
+    public string? Description { get; init; }
+    public DateOnly? EventDate { get; init; }
+}
+
+public sealed class UpdateWishlistSettingsCommand
+{
+    public string Name { get; init; } = string.Empty;
+    public string RegistryType { get; init; } = "General";
+    public string Visibility { get; init; } = "Private";
+    public decimal? CashFundGoal { get; init; }
+    public string? Description { get; init; }
+    public DateOnly? EventDate { get; init; }
+}
+
+public sealed class ContributeCashCommand
+{
+    public string Provider { get; init; } = "Stripe";
+    public decimal Amount { get; init; }
+    public string ContributorName { get; init; } = string.Empty;
+    public string? ContributorEmail { get; init; }
+    public string? Message { get; init; }
+}

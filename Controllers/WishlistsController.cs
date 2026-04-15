@@ -8,7 +8,7 @@ using MyWishList.Web.Services.Models;
 namespace MyWishList.Web.Controllers;
 
 [Authorize]
-public class WishlistsController(IWishlistService wishlistService, IItemService itemService) : Controller
+public class WishlistsController(IWishlistService wishlistService, IItemQueueService itemQueueService) : Controller
 {
     private const string FeedbackTypeKey = "FeedbackType";
     private const string FeedbackMessageKey = "FeedbackMessage";
@@ -29,7 +29,10 @@ public class WishlistsController(IWishlistService wishlistService, IItemService 
             return RedirectToAction("Login", "Account");
         }
 
-        var result = await wishlistService.CreateAsync(userId.Value, model.Name);
+        var result = await wishlistService.CreateAsync(userId.Value, new CreateWishlistCommand
+        {
+            Name = model.Name
+        });
         if (!result.Succeeded)
         {
             SetFeedback("danger", result.ErrorMessage ?? "Couldn't create wishlist.");
@@ -89,25 +92,23 @@ public class WishlistsController(IWishlistService wishlistService, IItemService 
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        var result = await itemService.AddToWishlistAsync(userId.Value, id, new CreateItemCommand
+        var ownsWishlist = await wishlistService.UserOwnsWishlistAsync(userId.Value, id);
+        if (!ownsWishlist)
         {
+            return NotFound();
+        }
+
+        await itemQueueService.EnqueueAsync(new AddItemQueueMessage
+        {
+            UserId = userId.Value,
+            WishlistId = id,
             ProductName = model.ProductName,
             Link = model.Link,
             Merchant = model.Merchant,
             Type = model.Type
         });
-        if (!result.Succeeded)
-        {
-            if (string.Equals(result.ErrorMessage, "Wishlist not found.", StringComparison.Ordinal))
-            {
-                return NotFound();
-            }
 
-            SetFeedback("danger", result.ErrorMessage ?? "Couldn't add item.");
-            return RedirectToAction(nameof(Details), new { id });
-        }
-
-        SetFeedback("success", "Item added.");
+        SetFeedback("success", "Item queued and will appear shortly.");
         return RedirectToAction(nameof(Details), new { id });
     }
 

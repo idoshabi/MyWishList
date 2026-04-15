@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyWishList.Web.Data;
 
@@ -11,9 +12,11 @@ using MyWishList.Web.Data;
 namespace MyWishList.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260415155219_RegistryV1Enhancements")]
+    partial class RegistryV1Enhancements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,58 +25,6 @@ namespace MyWishList.Web.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MyWishList.Web.Models.CashContribution", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ContributorEmail")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ContributorName")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("ExternalReference")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Message")
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
-
-                    b.Property<string>("Provider")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("WishlistId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WishlistId");
-
-                    b.ToTable("CashContributions");
-                });
-
             modelBuilder.Entity("MyWishList.Web.Models.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -81,12 +32,6 @@ namespace MyWishList.Web.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsPurchased")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsReceived")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsReserved")
                         .HasColumnType("bit");
@@ -103,16 +48,6 @@ namespace MyWishList.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(180)
                         .HasColumnType("nvarchar(180)");
-
-                    b.Property<DateTimeOffset?>("PurchasedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("PurchasedByName")
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
-
-                    b.Property<DateTimeOffset?>("ReceivedAtUtc")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("ReservedAtUtc")
                         .HasColumnType("datetimeoffset");
@@ -190,19 +125,10 @@ namespace MyWishList.Web.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal?>("CashFundGoal")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("CashFundRaised")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateOnly?>("EventDate")
-                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -237,17 +163,6 @@ namespace MyWishList.Web.Migrations
                     b.ToTable("Wishlists");
                 });
 
-            modelBuilder.Entity("MyWishList.Web.Models.CashContribution", b =>
-                {
-                    b.HasOne("MyWishList.Web.Models.Wishlist", "Wishlist")
-                        .WithMany("CashContributions")
-                        .HasForeignKey("WishlistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Wishlist");
-                });
-
             modelBuilder.Entity("MyWishList.Web.Models.Item", b =>
                 {
                     b.HasOne("MyWishList.Web.Models.Wishlist", "Wishlist")
@@ -277,8 +192,6 @@ namespace MyWishList.Web.Migrations
 
             modelBuilder.Entity("MyWishList.Web.Models.Wishlist", b =>
                 {
-                    b.Navigation("CashContributions");
-
                     b.Navigation("Items");
                 });
 #pragma warning restore 612, 618

@@ -29,3 +29,34 @@ public sealed class AddItemResult
     public string? ErrorMessage { get; init; }
     public int ItemId { get; init; }
 }
+
+public sealed class QueueAddItemResult
+{
+    public bool Succeeded { get; init; }
+    public string? ErrorMessage { get; init; }
+}
+
+public sealed class ReserveItemResult
+{
+    public bool Succeeded { get; init; }
+    public string? ErrorMessage { get; init; }
+}
+
+public sealed class WishlistSettingsResult
+{
+    public bool Succeeded { get; init; }
+    public string? ErrorMessage { get; init; }
+}
+
+public sealed class CashContributionResult
+{
+    public bool Succeeded { get; init; }
+    public string? ErrorMessage { get; init; }
+    public int ContributionId { get; init; }
+}
+
+public sealed class ItemStatusResult
+{
+    public bool Succeeded { get; init; }
+    public string? ErrorMessage { get; init; }
+}

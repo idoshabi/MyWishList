@@ -4,6 +4,8 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { WishlistPage } from "./pages/WishlistPage";
+import { PublicWishlistPage } from "./pages/PublicWishlistPage";
+import { DiscoverPage } from "./pages/DiscoverPage";
 import { api } from "./api";
 import type { AuthUser } from "./types";
 
@@ -56,6 +58,9 @@ export function App() {
           MyWishList
         </Link>
         <div className="topbar-right">
+          <Link className="ghost-btn link-btn" to="/discover">
+            Discover
+          </Link>
           {user ? (
             <button
               className="ghost-btn"
@@ -96,12 +101,14 @@ export function App() {
               user ? <DashboardPage context={context} /> : <Navigate to="/login" replace />
             }
           />
+          <Route path="/discover" element={<DiscoverPage />} />
           <Route
             path="/wishlists/:id"
             element={
               user ? <WishlistPage context={context} /> : <Navigate to="/login" replace />
             }
           />
+          <Route path="/shared/:shareToken" element={<PublicWishlistPage />} />
         </Routes>
       </main>
     </div>

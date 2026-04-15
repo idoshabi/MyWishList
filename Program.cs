@@ -66,10 +66,35 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IWishlistService, WishlistService>();
 builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IImportService, ImportService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddHostedService<WishlistMetricsBackgroundService>();
+builder.Services.AddSingleton<IItemQueueService>(serviceProvider =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+    var connectionString = configuration["StorageQueue:ConnectionString"];
+    var queueName = configuration["StorageQueue:AddItemQueueName"] ?? "add-item-requests";
+
+    if (!string.IsNullOrWhiteSpace(connectionString))
+    {
+        return new AzureStorageItemQueueService(
+            connectionString,
+            queueName,
+            loggerFactory.CreateLogger<AzureStorageItemQueueService>());
+    }
+
+    loggerFactory.CreateLogger("QueueConfig")
+        .LogWarning("Storage queue connection string missing. Using in-memory queue fallback.");
+    return new InMemoryItemQueueService();
+});
+builder.Services.AddHostedService<AddItemQueueWebJob>();
 
 var app = builder.Build();
 
