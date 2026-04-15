@@ -13,6 +13,9 @@ namespace MyWishList.Web.Controllers.Api;
 [Route("api/auth")]
 public class AuthApiController(IAuthService authService) : ApiControllerBase
 {
+    /// <summary>
+    /// Creates a new user account and signs the user in.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("register")]
     [ProducesResponseType<AuthUserResponse>(StatusCodes.Status201Created)]
@@ -38,6 +41,9 @@ public class AuthApiController(IAuthService authService) : ApiControllerBase
         return CreatedAtAction(nameof(Me), new { }, ToAuthUserResponse(result.User));
     }
 
+    /// <summary>
+    /// Authenticates a user with username/email and password.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("login")]
     [ProducesResponseType<AuthUserResponse>(StatusCodes.Status200OK)]
@@ -54,6 +60,9 @@ public class AuthApiController(IAuthService authService) : ApiControllerBase
         return Ok(ToAuthUserResponse(result.User));
     }
 
+    /// <summary>
+    /// Signs out the current authenticated user.
+    /// </summary>
     [Authorize]
     [HttpPost("logout")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -63,6 +72,9 @@ public class AuthApiController(IAuthService authService) : ApiControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Returns the currently authenticated user's profile.
+    /// </summary>
     [Authorize]
     [HttpGet("me")]
     [ProducesResponseType<AuthUserResponse>(StatusCodes.Status200OK)]

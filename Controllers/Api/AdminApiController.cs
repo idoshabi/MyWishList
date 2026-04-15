@@ -8,6 +8,12 @@ namespace MyWishList.Web.Controllers.Api;
 [Route("api/admin")]
 public class AdminApiController(IAdminService adminService, IConfiguration configuration) : ControllerBase
 {
+    /// <summary>
+    /// Returns platform-wide metrics for administrators.
+    /// </summary>
+    /// <remarks>
+    /// Requires a valid API key in the <c>X-Admin-Key</c> header.
+    /// </remarks>
     [HttpGet("metrics")]
     [ProducesResponseType<AdminMetricsResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

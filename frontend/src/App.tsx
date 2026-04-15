@@ -6,6 +6,8 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { WishlistPage } from "./pages/WishlistPage";
 import { PublicWishlistPage } from "./pages/PublicWishlistPage";
 import { DiscoverPage } from "./pages/DiscoverPage";
+import { AboutPage } from "./pages/AboutPage";
+import { ContactPage } from "./pages/ContactPage";
 import { api } from "./api";
 import type { AuthUser } from "./types";
 
@@ -61,6 +63,12 @@ export function App() {
           <Link className="ghost-btn link-btn" to="/discover">
             Discover
           </Link>
+          <Link className="ghost-btn link-btn" to="/about">
+            About
+          </Link>
+          <Link className="ghost-btn link-btn" to="/contact">
+            Contact
+          </Link>
           {user ? (
             <button
               className="ghost-btn"
@@ -102,6 +110,8 @@ export function App() {
             }
           />
           <Route path="/discover" element={<DiscoverPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route
             path="/wishlists/:id"
             element={
@@ -111,6 +121,15 @@ export function App() {
           <Route path="/shared/:shareToken" element={<PublicWishlistPage />} />
         </Routes>
       </main>
+
+      <footer className="footer">
+        <span>MyWishList - Crafted for every life milestone</span>
+        <div className="footer-links">
+          <Link to="/about">About Us</Link>
+          <Link to="/contact">Contact Us</Link>
+          <Link to="/discover">Discover</Link>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -62,6 +62,12 @@ export function DashboardPage({ context }: { context: AuthContextValue }) {
         </p>
       </div>
 
+      <div className="photo-strip">
+        <div className="photo-card photo-one" />
+        <div className="photo-card photo-two" />
+        <div className="photo-card photo-three" />
+      </div>
+
       <form className="create-row" onSubmit={onCreate}>
         <input
           className="input"

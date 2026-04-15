@@ -9,6 +9,9 @@ namespace MyWishList.Web.Controllers.Api;
 [Route("api/platform")]
 public class PlatformApiController(IImportService importService, INotificationService notificationService) : ControllerBase
 {
+    /// <summary>
+    /// Returns import preview data for a list of product URLs.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("import-preview")]
     [ProducesResponseType<IReadOnlyList<ImportedItemPreviewResponse>>(StatusCodes.Status200OK)]
@@ -23,6 +26,9 @@ public class PlatformApiController(IImportService importService, INotificationSe
         }));
     }
 
+    /// <summary>
+    /// Sends a thank-you message using the configured notification provider.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("thank-you")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

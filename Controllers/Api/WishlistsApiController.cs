@@ -10,6 +10,9 @@ namespace MyWishList.Web.Controllers.Api;
 [Route("api/wishlists")]
 public class WishlistsApiController(IWishlistService wishlistService, IItemService itemService, IItemQueueService itemQueueService) : ApiControllerBase
 {
+    /// <summary>
+    /// Returns all wishlists for the authenticated user.
+    /// </summary>
     [HttpGet]
     [ProducesResponseType<IReadOnlyList<WishlistSummaryResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -37,6 +40,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         }));
     }
 
+    /// <summary>
+    /// Returns a single wishlist owned by the authenticated user.
+    /// </summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType<WishlistDetailsResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -58,6 +64,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         return Ok(ToDetailsResponse(wishlist));
     }
 
+    /// <summary>
+    /// Creates a new wishlist for the authenticated user.
+    /// </summary>
     [HttpPost]
     [ProducesResponseType<WishlistDetailsResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status400BadRequest)]
@@ -88,6 +97,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         return CreatedAtAction(nameof(GetById), new { id = result.WishlistId }, wishlist is null ? null : ToDetailsResponse(wishlist));
     }
 
+    /// <summary>
+    /// Updates wishlist settings such as name, visibility, and event metadata.
+    /// </summary>
     [HttpPut("{id:int}/settings")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status400BadRequest)]
@@ -124,6 +136,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         return NoContent();
     }
 
+    /// <summary>
+    /// Queues a new item to be added to the wishlist asynchronously.
+    /// </summary>
     [HttpPost("{id:int}/items")]
     [ProducesResponseType<QueueItemResponse>(StatusCodes.Status202Accepted)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status400BadRequest)]
@@ -161,6 +176,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         return Accepted(new QueueItemResponse());
     }
 
+    /// <summary>
+    /// Returns a public wishlist by its share token.
+    /// </summary>
     [AllowAnonymous]
     [HttpGet("~/api/public/wishlists/{shareToken}")]
     [ProducesResponseType<WishlistDetailsResponse>(StatusCodes.Status200OK)]
@@ -176,6 +194,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         return Ok(ToDetailsResponse(wishlist));
     }
 
+    /// <summary>
+    /// Reserves an item for a guest by name.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("{id:int}/items/{itemId:int}/reserve")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -197,6 +218,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         return NoContent();
     }
 
+    /// <summary>
+    /// Removes a reservation from an item.
+    /// </summary>
     [AllowAnonymous]
     [HttpDelete("{id:int}/items/{itemId:int}/reserve")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -212,6 +236,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         return NoContent();
     }
 
+    /// <summary>
+    /// Marks an item as purchased by a guest.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("{id:int}/items/{itemId:int}/purchase")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -233,6 +260,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         return NoContent();
     }
 
+    /// <summary>
+    /// Marks an item as received by the wishlist owner.
+    /// </summary>
     [HttpPost("{id:int}/items/{itemId:int}/received")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ApiErrorResponse>(StatusCodes.Status400BadRequest)]
@@ -260,6 +290,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         return NoContent();
     }
 
+    /// <summary>
+    /// Searches public wishlists by text query and optional type.
+    /// </summary>
     [AllowAnonymous]
     [HttpGet("~/api/public/discover")]
     [ProducesResponseType<IReadOnlyList<WishlistSummaryResponse>>(StatusCodes.Status200OK)]
@@ -281,6 +314,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         }));
     }
 
+    /// <summary>
+    /// Records a cash contribution for a public wishlist.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("{id:int}/contributions")]
     [ProducesResponseType<CashContributionResponse>(StatusCodes.Status201Created)]
@@ -321,6 +357,9 @@ public class WishlistsApiController(IWishlistService wishlistService, IItemServi
         return StatusCode(StatusCodes.Status201Created, ToContributionResponse(contribution));
     }
 
+    /// <summary>
+    /// Returns contribution records for a wishlist owned by the authenticated user.
+    /// </summary>
     [HttpGet("{id:int}/contributions")]
     [ProducesResponseType<IReadOnlyList<CashContributionResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
