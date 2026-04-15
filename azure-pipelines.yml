@@ -15,6 +15,7 @@ variables:
   testProject: "MyWishList.Web.Tests/MyWishList.Web.Tests.csproj"
   publishDir: "$(Build.ArtifactStagingDirectory)/publish"
   appName: "mywishlist-68210"
+  azureSubscription: "MyWishList-Azure"
 
 stages:
   - stage: BuildAndTest
@@ -34,21 +35,30 @@ stages:
             displayName: "Restore"
             inputs:
               command: "restore"
-              projects: "$(webProject)"
+              projects: |
+                $(webProject)
+                $(testProject)
 
           - task: DotNetCoreCLI@2
-            displayName: "Build"
+            displayName: "Build web app"
             inputs:
               command: "build"
               projects: "$(webProject)"
               arguments: "--configuration $(buildConfiguration) --no-restore"
 
           - task: DotNetCoreCLI@2
-            displayName: "Test"
+            displayName: "Build tests"
+            inputs:
+              command: "build"
+              projects: "$(testProject)"
+              arguments: "--configuration $(buildConfiguration) --no-restore"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Run tests"
             inputs:
               command: "test"
               projects: "$(testProject)"
-              arguments: "--configuration $(buildConfiguration) --no-build"
+              arguments: "--configuration $(buildConfiguration) --no-build --no-restore"
 
           - task: DotNetCoreCLI@2
             displayName: "Publish app"
@@ -56,15 +66,14 @@ stages:
               command: "publish"
               publishWebProjects: false
               projects: "$(webProject)"
-              arguments: "--configuration $(buildConfiguration) --output $(publishDir)"
+              arguments: "--configuration $(buildConfiguration) --no-build --no-restore --output $(publishDir)"
               zipAfterPublish: true
 
-          - task: PublishBuildArtifacts@1
+          - task: PublishPipelineArtifact@1
             displayName: "Publish pipeline artifact"
             inputs:
-              PathtoPublish: "$(publishDir)"
-              ArtifactName: "drop"
-              publishLocation: "Container"
+              targetPath: "$(publishDir)"
+              artifact: "drop"
 
   - stage: Deploy
     displayName: Deploy to Azure App Service
@@ -80,13 +89,11 @@ stages:
           runOnce:
             deploy:
               steps:
-                - task: DownloadBuildArtifacts@1
+                - task: DownloadPipelineArtifact@2
                   displayName: "Download artifact"
                   inputs:
-                    buildType: "current"
-                    downloadType: "single"
-                    artifactName: "drop"
-                    downloadPath: "$(System.ArtifactsDirectory)"
+                    artifact: "drop"
+                    path: "$(Pipeline.Workspace)/drop"
 
                 - task: AzureWebApp@1
                   displayName: "Deploy to App Service"
@@ -94,4 +101,4 @@ stages:
                     azureSubscription: "$(azureSubscription)"
                     appType: "webApp"
                     appName: "$(appName)"
-                    package: "$(System.ArtifactsDirectory)/drop/**/*.zip"
+                    package: "$(Pipeline.Workspace)/drop/**/*.zip"
