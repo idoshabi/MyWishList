@@ -1,0 +1,74 @@
+@model MyWishList.Web.Models.ViewModels.CreateWishlistViewModel
+@{
+    ViewData["Title"] = "Create a Wish List";
+}
+
+<section class="hero" style="padding:3rem 0;">
+    <div class="container text-center" style="position:relative;z-index:1;">
+        <h1 class="h2 mb-1">Create a New Wish List</h1>
+        <p style="color:rgba(255,255,255,0.75);">Set up your list in seconds and start adding gifts.</p>
+    </div>
+</section>
+
+<section class="section-sm">
+    <div class="container">
+        <div class="create-card">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" style="font-size:0.9rem;"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-semibold">List Name <span class="text-danger">*</span></label>
+                    <input asp-for="Name" class="form-control form-control-lg" placeholder="e.g. Sarah & James Wedding, My Birthday 2026" autofocus />
+                    <span asp-validation-for="Name" class="text-danger" style="font-size:0.85rem;"></span>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-6">
+                        <label asp-for="RegistryType" class="form-label fw-semibold">Occasion</label>
+                        <select asp-for="RegistryType" class="form-select">
+                            <option value="General">General Wish List</option>
+                            <option value="Wedding">Wedding Registry</option>
+                            <option value="Baby">Baby Registry</option>
+                            <option value="Birthday">Birthday Gift List</option>
+                            <option value="Housewarming">Housewarming</option>
+                            <option value="Nonprofit">Charity / Nonprofit</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label asp-for="Visibility" class="form-label fw-semibold">Visibility</label>
+                        <select asp-for="Visibility" class="form-select">
+                            <option value="Private">Private — only you can see it</option>
+                            <option value="Public">Public — anyone with the link</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-semibold">Description <span class="text-muted fw-normal">(optional)</span></label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Tell guests what the occasion is about..."></textarea>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <label asp-for="EventDate" class="form-label fw-semibold">Event Date <span class="text-muted fw-normal">(optional)</span></label>
+                        <input asp-for="EventDate" class="form-control" type="date" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label asp-for="CashFundGoal" class="form-label fw-semibold">Cash Fund Goal <span class="text-muted fw-normal">(optional)</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input asp-for="CashFundGoal" class="form-control" type="number" min="0" step="0.01" placeholder="0.00" />
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-cta btn-lg w-100">Create Wish List</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

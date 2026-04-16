@@ -1,0 +1,72 @@
+@model IReadOnlyList<MyWishList.Web.Services.Models.WishlistSummaryDto>
+@{
+    ViewData["Title"] = "Search Results";
+    var query = ViewBag.Query as string;
+    var type = ViewBag.Type as string;
+}
+
+<section class="find-hero" style="padding:3rem 0;">
+    <div class="container">
+        <h1 class="h2 mb-2">Search Results</h1>
+        @if (!string.IsNullOrWhiteSpace(query))
+        {
+            <p style="color:rgba(255,255,255,0.7);">Showing results for "<strong>@query</strong>"@(string.IsNullOrWhiteSpace(type) ? "" : $" in {type}")</p>
+        }
+    </div>
+</section>
+
+<section class="section-sm">
+    <div class="container" style="max-width:800px;">
+        <form asp-controller="Landing" asp-action="FindResults" method="post" class="row g-2 mb-4">
+            <div class="col-sm-5">
+                <input name="query" class="form-control" placeholder="Search..." value="@query" />
+            </div>
+            <div class="col-sm-4">
+                <select name="type" class="form-select">
+                    <option value="">All types</option>
+                    @foreach (var t in new[] { "Wedding", "Baby", "Birthday", "Housewarming", "Nonprofit" })
+                    {
+                        <option value="@t" selected="@(type == t)">@t</option>
+                    }
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <button type="submit" class="btn btn-cta w-100">Search</button>
+            </div>
+        </form>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon"><i class="bi bi-search"></i></div>
+                <h3 class="h5 mb-1">No lists found</h3>
+                <p class="text-muted">Try a different name or occasion type.</p>
+                <a asp-controller="Landing" asp-action="Find" class="btn btn-outline-primary btn-sm">New Search</a>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column gap-3">
+                @foreach (var w in Model)
+                {
+                    <div class="result-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h4 class="h6 mb-1">@w.Name</h4>
+                                <div class="d-flex gap-2 mb-1">
+                                    <span class="badge-type">@w.RegistryType</span>
+                                    <small class="text-muted">@w.ItemCount items</small>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(w.Description))
+                                {
+                                    <p class="text-muted mb-0" style="font-size:0.9rem;">@(w.Description.Length > 120 ? w.Description[..120] + "..." : w.Description)</p>
+                                }
+                            </div>
+                            <a asp-controller="Wishlists" asp-action="Public" asp-route-shareToken="@w.ShareToken" class="btn btn-sm btn-outline-primary">View List</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>

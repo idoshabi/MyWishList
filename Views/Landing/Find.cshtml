@@ -1,0 +1,39 @@
+@{
+    ViewData["Title"] = "Find a Wish List";
+}
+
+<section class="find-hero">
+    <div class="container">
+        <h1 class="display-title mb-2">Find a Wish List</h1>
+        <p style="color:rgba(255,255,255,0.75);max-width:500px;margin:0 auto;">Search for someone's gift list by name, keyword, or occasion type.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width:700px;">
+        <form asp-controller="Landing" asp-action="FindResults" method="post" class="card card-body p-4">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Name or keyword</label>
+                    <input name="query" class="form-control form-control-lg" placeholder="e.g. Sarah's Wedding, Baby Shower for James..." />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label fw-semibold">Occasion</label>
+                    <select name="type" class="form-select form-select-lg">
+                        <option value="">All types</option>
+                        <option value="Wedding">Wedding</option>
+                        <option value="Baby">Baby</option>
+                        <option value="Birthday">Birthday</option>
+                        <option value="Housewarming">Housewarming</option>
+                        <option value="Nonprofit">Charity / Nonprofit</option>
+                    </select>
+                </div>
+                <div class="col-sm-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-cta btn-lg w-100">
+                        <i class="bi bi-search me-1"></i> Search Lists
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

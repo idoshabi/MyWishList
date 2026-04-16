@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "How It Works";
+}
+
+<section class="hero" style="padding:4rem 0;">
+    <div class="container text-center" style="position:relative;z-index:1;">
+        <h1 class="display-title mb-2">How MyWishList Works</h1>
+        <p class="lead mx-auto">Four simple steps to the perfect gift list.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width:800px;">
+        @{
+            var steps = new[] {
+                ("1", "bi-plus-circle-fill", "Create Your List", "Sign up for free and create a wish list in seconds. Choose an occasion — wedding, baby shower, birthday, housewarming, or anything else — and give it a name."),
+                ("2", "bi-bag-plus-fill", "Add Items from Any Store", "Browse any online store, copy the product link, and paste it into your list. Or add items manually. There are no store restrictions — if it exists online, you can add it."),
+                ("3", "bi-share-fill", "Share One Link", "Every list gets a unique shareable link. Send it via text, email, or social media. Guests see your list, reserve items, and avoid duplicates — all without needing an account."),
+                ("4", "bi-gift-fill", "Track & Celebrate", "See who reserved or bought each gift. Mark items as received. Send thank-you notes. Enjoy a stress-free celebration."),
+            };
+        }
+        @foreach (var (num, icon, title, desc) in steps)
+        {
+            <div class="d-flex gap-4 mb-5">
+                <div class="step-number flex-shrink-0">@num</div>
+                <div>
+                    <h3 class="h5 mb-2"><i class="bi @icon me-2 text-primary"></i>@title</h3>
+                    <p class="text-muted mb-0">@desc</p>
+                </div>
+            </div>
+        }
+
+        <div class="text-center mt-5">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-cta btn-lg">Create Your First List</a>
+        </div>
+    </div>
+</section>

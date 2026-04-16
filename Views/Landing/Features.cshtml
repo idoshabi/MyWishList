@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Features";
+}
+
+<section class="hero" style="padding:4rem 0;">
+    <div class="container text-center" style="position:relative;z-index:1;">
+        <h1 class="display-title mb-2">Powerful Features, Simple Experience</h1>
+        <p class="lead mx-auto">Everything you need to create the perfect gift list.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="row g-4">
+            @{
+                var feats = new[] {
+                    ("bi-globe2", "#ede9fe", "var(--primary)", "Universal Item Saving", "Add products from any online store — Amazon, Target, Etsy, Nordstrom, small boutiques, or anywhere else. No restrictions, no partnerships required."),
+                    ("bi-link-45deg", "#dbeafe", "#2563eb", "One Shareable Link", "Every list gets a unique URL. Share it via text, email, or social media. Your guests don't need an account to view and reserve gifts."),
+                    ("bi-shield-check", "#d1fae5", "var(--success)", "Gift Reservation & Tracking", "Guests can reserve items so nothing is duplicated. You see real-time status of every item — reserved, purchased, or received."),
+                    ("bi-cash-coin", "#fef3c7", "var(--accent-dark)", "Cash Fund Contributions", "Set up a cash fund for experiences, honeymoons, or college savings. Accept contributions alongside physical gifts."),
+                    ("bi-envelope-heart", "#fce7f3", "#db2777", "Thank-You Note Tracking", "Keep track of who gave what and send personalized thank-you messages — never forget to express your gratitude."),
+                    ("bi-arrow-repeat", "#e0e7ff", "#4f46e5", "Registry Sync (Coming Soon)", "Already registered at a specific store? Import those items into your MyWishList so everything is in one place."),
+                    ("bi-phone", "#f3e8ff", "#7c3aed", "Mobile-Friendly Design", "Manage your lists, add items, and track gifts from any device. Optimized for phones, tablets, and desktops."),
+                    ("bi-puzzle", "#fef3c7", "#b45309", "Browser Extension (Coming Soon)", "Add items to your list with one click while browsing any store online. No copy-pasting needed."),
+                    ("bi-eye-slash", "#f1f5f9", "var(--gray-600)", "Privacy Controls", "Choose whether your list is public or private. Control exactly who can see and interact with your gift list."),
+                };
+            }
+            @foreach (var (icon, bg, color, title, desc) in feats)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-lift h-100 feature-card">
+                        <div class="feature-icon" style="background:@bg;color:@color;">
+                            <i class="bi @icon"></i>
+                        </div>
+                        <h4 style="font-size:1.05rem;">@title</h4>
+                        <p class="text-muted mb-0" style="font-size:0.9rem;">@desc</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-5">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-cta btn-lg">Get Started Free</a>
+        </div>
+    </div>
+</section>

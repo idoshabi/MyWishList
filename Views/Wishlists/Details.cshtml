@@ -1,82 +1,152 @@
 @model MyWishList.Web.Models.ViewModels.WishlistDetailsViewModel
 @{
     ViewData["Title"] = Model.WishlistName;
+    var shareUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/lists/{Model.ShareToken}";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 mb-1">@Model.WishlistName</h1>
-        <p class="text-muted mb-0">Add and manage items in this wishlist.</p>
-    </div>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Back to Dashboard</a>
-</div>
-
-@if (TempData["FeedbackMessage"] is string feedbackMessage)
-{
-    var feedbackType = TempData["FeedbackType"] as string ?? "info";
-    <div class="alert alert-@feedbackType" role="alert">@feedbackMessage</div>
-}
-
-<div class="card mb-4">
-    <div class="card-body">
-        <h2 class="h5">Add Item</h2>
-        <form asp-controller="Wishlists" asp-action="AddItem" asp-route-id="@Model.WishlistId" method="post" class="row g-2">
-            @Html.AntiForgeryToken()
-            <div class="col-md-6">
-                <input name="ProductName" class="form-control" placeholder="Product name" required />
-            </div>
-            <div class="col-md-6">
-                <input name="Link" class="form-control" placeholder="Product link (optional)" />
-            </div>
-            <div class="col-md-6">
-                <input name="Merchant" class="form-control" placeholder="Merchant (optional)" />
-            </div>
-            <div class="col-md-3">
-                <input name="Type" class="form-control" placeholder="Type (optional)" />
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-primary w-100">Add Item</button>
-            </div>
-        </form>
+<div class="detail-header">
+    <div class="container">
+        <a asp-controller="Home" asp-action="Index" class="text-decoration-none" style="color:rgba(255,255,255,0.7);font-size:0.9rem;"><i class="bi bi-arrow-left me-1"></i>Back to Dashboard</a>
+        <h1 class="h3 mt-2 mb-1">@Model.WishlistName</h1>
+        <div class="d-flex flex-wrap gap-2 align-items-center" style="color:rgba(255,255,255,0.75);font-size:0.9rem;">
+            <span class="badge-type" style="background:rgba(255,255,255,0.15);color:#fff;">@Model.RegistryType</span>
+            <span class="@(Model.Visibility == "Public" ? "" : "")" style="background:rgba(255,255,255,0.1);padding:0.15rem 0.5rem;border-radius:999px;font-size:0.8rem;">@Model.Visibility</span>
+            @if (Model.EventDate.HasValue)
+            {
+                <span><i class="bi bi-calendar-event me-1"></i>@Model.EventDate.Value.ToString("MMM d, yyyy")</span>
+            }
+            <span><i class="bi bi-box me-1"></i>@Model.Items.Count items</span>
+        </div>
     </div>
 </div>
 
-@if (!Model.Items.Any())
-{
-    <div class="alert alert-info">No items yet in this wishlist.</div>
-}
-else
-{
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Merchant</th>
-                    <th>Type</th>
-                    <th>Link</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.Items)
-                {
-                    <tr>
-                        <td>@item.ProductName</td>
-                        <td>@(item.Merchant ?? "-")</td>
-                        <td>@(item.Type ?? "-")</td>
-                        <td>
+<div class="container">
+    @if (TempData["FeedbackMessage"] is string feedbackMessage)
+    {
+        var feedbackType = TempData["FeedbackType"] as string ?? "info";
+        <div class="alert alert-@feedbackType alert-dismissible fade show" role="alert" style="border-radius:var(--radius-md);">
+            @feedbackMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <p class="text-muted mb-3">@Model.Description</p>
+    }
+
+    <!-- Share Link -->
+    @if (Model.Visibility == "Public")
+    {
+        <div class="share-link-box mb-4">
+            <i class="bi bi-link-45deg text-primary"></i>
+            <input type="text" readonly value="@shareUrl" id="shareUrl" />
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="navigator.clipboard.writeText(document.getElementById('shareUrl').value);this.textContent='Copied!';">
+                <i class="bi bi-clipboard me-1"></i>Copy Link
+            </button>
+        </div>
+    }
+
+    <!-- Cash Fund Progress -->
+    @if (Model.CashFundGoal.HasValue && Model.CashFundGoal > 0)
+    {
+        var pct = Model.CashFundGoal > 0 ? Math.Min(100, (int)(Model.CashFundRaised / Model.CashFundGoal.Value * 100)) : 0;
+        <div class="card card-body mb-4" style="background:var(--gray-50);border:none;">
+            <div class="d-flex justify-content-between mb-1">
+                <strong>Cash Fund</strong>
+                <span class="text-muted">$@Model.CashFundRaised.ToString("N0") of $@Model.CashFundGoal.Value.ToString("N0")</span>
+            </div>
+            <div class="progress" style="height:10px;border-radius:5px;">
+                <div class="progress-bar" role="progressbar" style="width:@(pct)%;background:var(--primary);border-radius:5px;"></div>
+            </div>
+        </div>
+    }
+
+    <!-- Add Item Form -->
+    @if (Model.IsOwner)
+    {
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3"><i class="bi bi-plus-circle me-1 text-primary"></i>Add an Item</h2>
+                <form asp-controller="Wishlists" asp-action="AddItem" asp-route-id="@Model.WishlistId" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-2">
+                        <div class="col-md-5">
+                            <input name="ProductName" class="form-control" placeholder="Product name" required />
+                        </div>
+                        <div class="col-md-4">
+                            <input name="Link" class="form-control" placeholder="Product URL (optional)" />
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <input name="Merchant" class="form-control" placeholder="Store" />
+                        </div>
+                        <div class="col-md-9">
+                            <input name="Type" class="form-control" placeholder="Category, e.g. Kitchen, Electronics (optional)" />
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-cta w-100"><i class="bi bi-plus-lg me-1"></i>Add</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+
+    <!-- Items List -->
+    @if (!Model.Items.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon"><i class="bi bi-box-seam"></i></div>
+            <h3 class="h5 mb-2">No items yet</h3>
+            <p class="text-muted">Add your first item above to get started.</p>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-2">
+            @foreach (var item in Model.Items)
+            {
+                var statusClass = item.IsPurchased ? "purchased" : item.IsReserved ? "reserved" : "";
+                <div class="item-card @statusClass">
+                    <div class="item-thumb">
+                        @if (item.IsPurchased) { <i class="bi bi-check-circle-fill" style="color:var(--success);"></i> }
+                        else if (item.IsReserved) { <i class="bi bi-bookmark-fill" style="color:var(--accent);"></i> }
+                        else { <i class="bi bi-gift" style="color:var(--gray-400);"></i> }
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong style="font-size:0.95rem;">@item.ProductName</strong>
+                                @if (!string.IsNullOrWhiteSpace(item.Merchant))
+                                {
+                                    <span class="text-muted ms-2" style="font-size:0.8rem;">@item.Merchant</span>
+                                }
+                            </div>
                             @if (!string.IsNullOrWhiteSpace(item.Link))
                             {
-                                <a href="@item.Link" target="_blank" rel="noopener noreferrer">Open</a>
+                                <a href="@item.Link" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary" style="font-size:0.8rem;">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i>View
+                                </a>
                             }
-                            else
+                        </div>
+                        <div class="d-flex gap-2 mt-1" style="font-size:0.8rem;">
+                            @if (!string.IsNullOrWhiteSpace(item.Type))
                             {
-                                <span>-</span>
+                                <span class="badge-type" style="font-size:0.7rem;">@item.Type</span>
                             }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+                            @if (item.IsPurchased)
+                            {
+                                <span style="color:var(--success);"><i class="bi bi-check-circle-fill me-1"></i>Purchased@(item.PurchasedByName != null ? $" by {item.PurchasedByName}" : "")</span>
+                            }
+                            else if (item.IsReserved)
+                            {
+                                <span style="color:var(--accent-dark);"><i class="bi bi-bookmark-fill me-1"></i>Reserved@(item.ReservedByName != null ? $" by {item.ReservedByName}" : "")</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+<div style="height:3rem;"></div>

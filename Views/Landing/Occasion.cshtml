@@ -1,0 +1,102 @@
+@{
+    var type = ViewBag.OccasionType as string ?? "General";
+    ViewData["Title"] = type + " Registry";
+
+    var config = type switch {
+        "Wedding" => (
+            Gradient: "linear-gradient(135deg, #be185d, #db2777, #ec4899)",
+            Icon: "bi-heart-fill",
+            Headline: "Your Dream Wedding Registry",
+            Subtitle: "Combine gifts from every store into one elegant list. From fine china to honeymoon funds — make it yours.",
+            Reasons: new[] {
+                "Add gifts from any store — no restrictions",
+                "Set up a honeymoon or experience cash fund",
+                "Guests can reserve items to avoid duplicates",
+                "Share one link on your wedding website or invites",
+                "Track gifts and send thank-you notes in one place",
+            }
+        ),
+        "Baby" => (
+            Gradient: "linear-gradient(135deg, #1d4ed8, #2563eb, #3b82f6)",
+            Icon: "bi-balloon-fill",
+            Headline: "Your All-in-One Baby Registry",
+            Subtitle: "From nursery essentials to that special stroller — bring everything together for your little one's arrival.",
+            Reasons: new[] {
+                "Register for items at any store or boutique",
+                "Add a diaper fund or college savings cash fund",
+                "Friends and family can reserve items easily",
+                "Works for baby showers, sprinkles, and sip-and-sees",
+                "Mobile-friendly for busy parents-to-be",
+            }
+        ),
+        "Birthday" => (
+            Gradient: "linear-gradient(135deg, #b45309, #d97706, #f59e0b)",
+            Icon: "bi-gift-fill",
+            Headline: "Build Your Birthday Wish List",
+            Subtitle: "No more guessing games. Tell people exactly what you want — from any store, at any price.",
+            Reasons: new[] {
+                "Perfect for kids, teens, and adults",
+                "Add items from electronics to experiences",
+                "Share with friends and family via one link",
+                "Avoid duplicate gifts automatically",
+                "Great for milestone birthdays and surprise parties",
+            }
+        ),
+        "Housewarming" => (
+            Gradient: "linear-gradient(135deg, #047857, #059669, #10b981)",
+            Icon: "bi-house-heart-fill",
+            Headline: "Your Housewarming Gift List",
+            Subtitle: "Moving into a new place? Let friends and family help you fill it with things you actually need.",
+            Reasons: new[] {
+                "Add kitchen, furniture, and decor items from anywhere",
+                "Set up a home improvement cash fund",
+                "Perfect for first homes and new apartments",
+                "Share with neighbors, colleagues, and loved ones",
+                "Keep track of everything in one organized list",
+            }
+        ),
+        _ => (
+            Gradient: "linear-gradient(135deg, #7c3aed, #8b5cf6, #a78bfa)",
+            Icon: "bi-globe-americas",
+            Headline: "Create a Charitable Gift List",
+            Subtitle: "Support causes you care about. Create a list of donations and items for your favorite nonprofits.",
+            Reasons: new[] {
+                "Great for fundraisers and charity events",
+                "Accept cash contributions for any cause",
+                "Share with your community via one link",
+                "Track donations and contributions transparently",
+                "Works for holidays, giving events, and memorials",
+            }
+        ),
+    };
+}
+
+<section class="occasion-hero" style="background:@config.Gradient;">
+    <div class="container" style="position:relative;z-index:1;">
+        <div style="font-size:3rem;margin-bottom:0.5rem;"><i class="bi @config.Icon"></i></div>
+        <h1 class="display-title mb-3">@config.Headline</h1>
+        <p class="lead mx-auto" style="max-width:560px;">@config.Subtitle</p>
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a asp-controller="Wishlists" asp-action="Create" asp-route-type="@type" class="btn btn-lg" style="background:#fff;color:var(--gray-800);font-weight:700;">Create Your @type List</a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width:700px;">
+        <h2 class="section-title text-center mb-4">Why MyWishList for Your @type?</h2>
+        <div class="d-flex flex-column gap-3">
+            @foreach (var reason in config.Reasons)
+            {
+                <div class="d-flex align-items-start gap-3">
+                    <i class="bi bi-check-circle-fill text-primary mt-1"></i>
+                    <span style="font-size:1.05rem;">@reason</span>
+                </div>
+            }
+        </div>
+        <div class="text-center mt-5">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-cta btn-lg">Get Started Free</a>
+            <p class="text-muted mt-2" style="font-size:0.85rem;">Free forever. No credit card required.</p>
+        </div>
+    </div>
+</section>

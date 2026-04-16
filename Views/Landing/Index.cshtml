@@ -1,0 +1,312 @@
+@{
+    ViewData["Title"] = null;
+    var userCount = (int)(ViewBag.UserCount ?? 0);
+    var listCount = (int)(ViewBag.WishlistCount ?? 0);
+    var itemCount = (int)(ViewBag.ItemCount ?? 0);
+}
+
+<!-- Hero -->
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6" style="position:relative;z-index:1;">
+                <h1 class="display-title mb-3">One Wish List.<br>Every Store.<br>Every Occasion.</h1>
+                <p class="lead mb-4">Save the gifts you love from any store in the world. Share one beautiful link with family and friends. Track everything in one place.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-lg" style="background:#fff;color:var(--primary);font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,0.15);">Create Your List</a>
+                    <a asp-controller="Landing" asp-action="Find" class="btn btn-lg btn-light">Find a Wish List</a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block" style="position:relative;z-index:1;">
+                <div class="hero-mockup">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.3);"></div>
+                        <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.3);"></div>
+                        <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.3);"></div>
+                        <span style="margin-left:auto;font-size:0.8rem;opacity:0.6;">mywishlist.com/s/abc123</span>
+                    </div>
+                    <div class="hero-mockup-item">
+                        <div class="hero-dot" style="background:rgba(251,191,36,0.3);"></div>
+                        <div style="flex:1;">
+                            <div class="hero-mockup-line" style="width:70%;margin-bottom:6px;"></div>
+                            <div class="hero-mockup-line" style="width:40%;height:8px;"></div>
+                        </div>
+                        <span style="font-size:0.8rem;opacity:0.6;">Amazon</span>
+                    </div>
+                    <div class="hero-mockup-item">
+                        <div class="hero-dot" style="background:rgba(52,211,153,0.3);"></div>
+                        <div style="flex:1;">
+                            <div class="hero-mockup-line" style="width:85%;margin-bottom:6px;"></div>
+                            <div class="hero-mockup-line" style="width:50%;height:8px;"></div>
+                        </div>
+                        <span style="font-size:0.8rem;opacity:0.6;">Target</span>
+                    </div>
+                    <div class="hero-mockup-item">
+                        <div class="hero-dot" style="background:rgba(248,113,113,0.3);"></div>
+                        <div style="flex:1;">
+                            <div class="hero-mockup-line" style="width:60%;margin-bottom:6px;"></div>
+                            <div class="hero-mockup-line" style="width:35%;height:8px;"></div>
+                        </div>
+                        <span style="font-size:0.8rem;opacity:0.6;">Etsy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Occasions -->
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Create a List for Any Occasion</h2>
+            <p class="section-subtitle mx-auto">Whether it's a wedding, baby shower, birthday, or holiday — MyWishList brings everything together in one place.</p>
+        </div>
+        <div class="row g-4">
+            @{
+                var occasions = new[] {
+                    ("Wedding", "bi-heart-fill", "#fce7f3", "#db2777", "Build your dream registry"),
+                    ("Baby", "bi-balloon-fill", "#dbeafe", "#2563eb", "Welcome your little one"),
+                    ("Birthday", "bi-gift-fill", "#fef3c7", "#d97706", "Celebrate another year"),
+                    ("Housewarming", "bi-house-heart-fill", "#d1fae5", "#059669", "Settle into your new home"),
+                    ("Holiday", "bi-snow2", "#e0e7ff", "#4f46e5", "Make the holidays magical"),
+                    ("Nonprofit", "bi-globe-americas", "#fae8ff", "#9333ea", "Support a cause you love"),
+                };
+            }
+            @foreach (var (type, icon, bg, color, desc) in occasions)
+            {
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a asp-controller="Landing" asp-action="Occasion" asp-route-type="@type" class="occasion-card">
+                        <div class="occasion-icon" style="background:@bg;color:@color;">
+                            <i class="bi @icon"></i>
+                        </div>
+                        <h3>@type</h3>
+                        <p>@desc</p>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Value Props -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <h2 class="section-title mb-3">Everything You Need,<br><span class="text-gradient">All In One Place</span></h2>
+                <p class="text-muted mb-4">Stop juggling registries across different stores. MyWishList lets you add items from anywhere — any store, any website, any price range.</p>
+                <div class="d-flex flex-column gap-3">
+                    @{
+                        var props = new[] {
+                            ("bi-bag-check-fill", "var(--primary)", "Add items from any store in the world"),
+                            ("bi-link-45deg", "var(--success)", "Share one single link with everyone"),
+                            ("bi-check2-circle", "var(--accent)", "Track gifts and avoid duplicates"),
+                            ("bi-collection-fill", "var(--danger)", "Organize by occasion or category"),
+                            ("bi-cash-stack", "var(--primary)", "Accept cash fund contributions"),
+                        };
+                    }
+                    @foreach (var (icon, color, text) in props)
+                    {
+                        <div class="d-flex align-items-center gap-3">
+                            <div style="width:40px;height:40px;border-radius:var(--radius-sm);background:color-mix(in srgb, @color 10%, transparent);color:@color;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="bi @icon"></i>
+                            </div>
+                            <span style="font-weight:500;">@text</span>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="card card-body text-center p-4" style="border:none;background:linear-gradient(135deg,#ede9fe,#ddd6fe);">
+                            <i class="bi bi-shop fs-1 mb-2" style="color:var(--primary);"></i>
+                            <strong>Any Store</strong>
+                            <small class="text-muted">Amazon, Target, Etsy, and more</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card card-body text-center p-4" style="border:none;background:linear-gradient(135deg,#fce7f3,#fbcfe8);">
+                            <i class="bi bi-share-fill fs-1 mb-2" style="color:#db2777;"></i>
+                            <strong>One Link</strong>
+                            <small class="text-muted">Easy to share, easy to find</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card card-body text-center p-4" style="border:none;background:linear-gradient(135deg,#d1fae5,#a7f3d0);">
+                            <i class="bi bi-shield-check fs-1 mb-2" style="color:var(--success);"></i>
+                            <strong>No Duplicates</strong>
+                            <small class="text-muted">Reserve and track gifts</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card card-body text-center p-4" style="border:none;background:linear-gradient(135deg,#fef3c7,#fde68a);">
+                            <i class="bi bi-heart-fill fs-1 mb-2" style="color:var(--accent-dark);"></i>
+                            <strong>Thank-You Tracking</strong>
+                            <small class="text-muted">Never forget to say thanks</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle mx-auto">Getting started takes less than a minute.</p>
+        </div>
+        <div class="d-flex flex-wrap justify-content-center align-items-start gap-0">
+            @{
+                var steps = new[] {
+                    ("1", "Create Your List", "Sign up and create a wish list for any occasion — wedding, birthday, baby, or just because."),
+                    ("2", "Add Items from Anywhere", "Paste a link from any online store or add items manually. Everything lives in one beautiful list."),
+                    ("3", "Share with Everyone", "Send your unique link to family and friends. They can browse your list and reserve gifts."),
+                    ("4", "Track & Celebrate", "See who's buying what, avoid duplicates, and send thank-you notes — all from your dashboard."),
+                };
+            }
+            @for (var i = 0; i < steps.Length; i++)
+            {
+                var (num, title, desc) = steps[i];
+                <div class="text-center" style="max-width:220px;">
+                    <div class="step-number">@num</div>
+                    <h4 style="font-size:1.05rem;">@title</h4>
+                    <p class="text-muted" style="font-size:0.9rem;">@desc</p>
+                </div>
+                if (i < steps.Length - 1)
+                {
+                    <div class="step-connector d-none d-md-block"></div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Feature Highlights -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Packed with Features You'll Love</h2>
+        </div>
+        <div class="row g-4">
+            @{
+                var features = new[] {
+                    ("bi-globe2", "#ede9fe", "var(--primary)", "Universal Saving", "Add products from any website. If it's online, you can add it to your list."),
+                    ("bi-arrow-repeat", "#dbeafe", "#2563eb", "Registry Sync", "Connect existing store registries and bring everything together. Coming soon."),
+                    ("bi-clipboard2-check", "#d1fae5", "var(--success)", "Gift Tracking", "See who reserved or purchased each item in real time."),
+                    ("bi-envelope-heart-fill", "#fce7f3", "#db2777", "Thank-You Notes", "Track and send personalized thank-you messages to your gift-givers."),
+                    ("bi-cash-coin", "#fef3c7", "var(--accent-dark)", "Cash Funds", "Set up cash contributions for honeymoons, college funds, or any goal."),
+                    ("bi-phone", "#e0e7ff", "#4f46e5", "Mobile-Friendly", "Manage your lists and add items on the go from any device."),
+                };
+            }
+            @foreach (var (icon, bg, color, title, desc) in features)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-lift h-100 feature-card">
+                        <div class="feature-icon" style="background:@bg;color:@color;">
+                            <i class="bi @icon"></i>
+                        </div>
+                        <h4 style="font-size:1.1rem;">@title</h4>
+                        <p class="text-muted mb-0" style="font-size:0.9rem;">@desc</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Find a Registry / Search -->
+<section class="search-section">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="section-title">Find a Wish List</h2>
+            <p style="color:rgba(255,255,255,0.7);">Looking for someone's gift list? Search by name or occasion.</p>
+        </div>
+        <form asp-controller="Landing" asp-action="FindResults" method="post" class="row g-3 justify-content-center" style="max-width:700px;margin:0 auto;">
+            <div class="col-sm-4">
+                <input name="query" class="form-control" placeholder="Name or keyword" />
+            </div>
+            <div class="col-sm-4">
+                <select name="type" class="form-select">
+                    <option value="">All occasions</option>
+                    <option value="Wedding">Wedding</option>
+                    <option value="Baby">Baby</option>
+                    <option value="Birthday">Birthday</option>
+                    <option value="Housewarming">Housewarming</option>
+                    <option value="Nonprofit">Nonprofit</option>
+                </select>
+            </div>
+            <div class="col-sm-4">
+                <button type="submit" class="btn btn-cta w-100">
+                    <i class="bi bi-search me-1"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Testimonials / Social Proof -->
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Loved by Gift-Givers Everywhere</h2>
+        </div>
+        <div class="row g-4 mb-5">
+            @{
+                var testimonials = new[] {
+                    ("S.M.", "Sarah M.", "We used MyWishList for our wedding and it was amazing. Guests loved how easy it was to find exactly what we wanted — from any store.", "Wedding Registry"),
+                    ("J.R.", "James R.", "Finally, one place for everything. I added items from five different stores in under ten minutes. My family actually bought what I wanted!", "Birthday List"),
+                    ("L.P.", "Lisa P.", "The cash fund feature was a lifesaver for our baby shower. So much easier than returning duplicate gifts.", "Baby Registry"),
+                };
+            }
+            @foreach (var (initials, name, quote, occasion) in testimonials)
+            {
+                <div class="col-md-4">
+                    <div class="testimonial-card card h-100">
+                        <div class="card-body">
+                            <div class="stars mb-2">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                            <p class="mb-3" style="font-size:0.95rem;">"@quote"</p>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="testimonial-avatar">@initials</div>
+                                <div>
+                                    <strong style="font-size:0.9rem;">@name</strong>
+                                    <div class="text-muted" style="font-size:0.8rem;">@occasion</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="row g-4 text-center">
+            <div class="col-4">
+                <div class="stat-number">@(userCount > 0 ? userCount.ToString("N0") : "1,200")+ </div>
+                <div class="stat-label">Happy Users</div>
+            </div>
+            <div class="col-4">
+                <div class="stat-number">@(listCount > 0 ? listCount.ToString("N0") : "3,400")+ </div>
+                <div class="stat-label">Lists Created</div>
+            </div>
+            <div class="col-4">
+                <div class="stat-number">@(itemCount > 0 ? itemCount.ToString("N0") : "28,000")+ </div>
+                <div class="stat-label">Gifts Tracked</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Banner -->
+<section class="section-sm">
+    <div class="container">
+        <div class="cta-banner text-center px-3">
+            <h2 class="display-title mb-3" style="font-size:clamp(1.5rem,4vw,2.5rem);">Ready to Build Your Wish List?</h2>
+            <p style="color:rgba(255,255,255,0.8);max-width:500px;margin:0 auto 1.5rem;">Join thousands who use MyWishList to make gift-giving simple, personal, and joyful.</p>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-lg" style="background:#fff;color:var(--primary);font-weight:700;">Get Started Free</a>
+        </div>
+    </div>
+</section>
+<div style="height:3rem;"></div>

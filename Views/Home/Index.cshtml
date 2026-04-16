@@ -3,52 +3,103 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 mb-1">My Great Wishlists</h1>
-        <p class="text-muted mb-0">Create lists and track items you want.</p>
+<div class="dashboard-header">
+    <div class="container">
+        <h1 class="h3 mb-1">Welcome back, @Model.FirstName!</h1>
+        <p style="color:rgba(255,255,255,0.75);margin:0;">Manage your wish lists and track gifts.</p>
     </div>
 </div>
 
-@if (TempData["FeedbackMessage"] is string feedbackMessage)
-{
-    var feedbackType = TempData["FeedbackType"] as string ?? "info";
-    <div class="alert alert-@feedbackType" role="alert">@feedbackMessage</div>
-}
+<div class="container">
+    @if (TempData["FeedbackMessage"] is string feedbackMessage)
+    {
+        var feedbackType = TempData["FeedbackType"] as string ?? "info";
+        <div class="alert alert-@feedbackType alert-dismissible fade show" role="alert" style="border-radius:var(--radius-md);">
+            @feedbackMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-<div class="card mb-4">
-    <div class="card-body">
-        <h2 class="h5">Create a new wishlist</h2>
-        <form asp-controller="Wishlists" asp-action="Create" method="post" class="row g-2">
-            @Html.AntiForgeryToken()
-            <div class="col-md-8">
-                <input name="Name" class="form-control" placeholder="Birthday 2026, Baby Registry, etc." required />
+    <!-- Stats -->
+    <div class="row g-3 mb-4" style="margin-top:-2.5rem;">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-value text-primary">@Model.TotalLists</div>
+                <div class="stat-card-label">My Lists</div>
             </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn btn-primary w-100">Create Wishlist</button>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-value" style="color:var(--accent-dark);">@Model.TotalItems</div>
+                <div class="stat-card-label">Items Saved</div>
             </div>
-        </form>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-value" style="color:var(--success);">@Model.GiftsPurchased</div>
+                <div class="stat-card-label">Gifts Purchased</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-card-value" style="color:#db2777;">@Model.UpcomingEvents</div>
+                <div class="stat-card-label">Upcoming Events</div>
+            </div>
+        </div>
     </div>
-</div>
 
-@if (!Model.Wishlists.Any())
-{
-    <div class="alert alert-info">No wishlists yet. Create your first one above.</div>
-}
-else
-{
-    <div class="row g-3">
-        @foreach (var wishlist in Model.Wishlists)
-        {
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h3 class="h5">@wishlist.Name</h3>
-                        <p class="text-muted">Items: @wishlist.ItemCount</p>
-                        <a class="btn btn-outline-primary" asp-controller="Wishlists" asp-action="Details" asp-route-id="@wishlist.Id">Open Wishlist</a>
-                    </div>
+    <!-- Actions -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <h2 class="h5 mb-0">My Wish Lists</h2>
+        <a asp-controller="Wishlists" asp-action="Create" class="btn btn-cta btn-sm btn-icon">
+            <i class="bi bi-plus-lg"></i> New List
+        </a>
+    </div>
+
+    @if (!Model.Wishlists.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon"><i class="bi bi-gift"></i></div>
+            <h3 class="h5 mb-2">No wish lists yet</h3>
+            <p class="text-muted mb-3">Create your first list to start saving gifts from any store.</p>
+            <a asp-controller="Wishlists" asp-action="Create" class="btn btn-cta">Create Your First List</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var wishlist in Model.Wishlists)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Wishlists" asp-action="Details" asp-route-id="@wishlist.Id" class="list-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h3 class="h6 mb-0" style="color:var(--gray-900);">@wishlist.Name</h3>
+                            <span class="badge-type">@wishlist.RegistryType</span>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(wishlist.Description))
+                        {
+                            <p class="text-muted mb-2" style="font-size:0.85rem;">@(wishlist.Description.Length > 80 ? wishlist.Description[..80] + "..." : wishlist.Description)</p>
+                        }
+                        <div class="d-flex gap-3 text-muted" style="font-size:0.85rem;">
+                            <span><i class="bi bi-box me-1"></i>@wishlist.ItemCount items</span>
+                            <span class="@(wishlist.Visibility == "Public" ? "badge-public" : "badge-private")" style="padding:0.15rem 0.5rem;border-radius:999px;font-size:0.75rem;">
+                                @wishlist.Visibility
+                            </span>
+                        </div>
+                        @if (wishlist.EventDate.HasValue)
+                        {
+                            var days = wishlist.EventDate.Value.DayNumber - DateOnly.FromDateTime(DateTime.Today).DayNumber;
+                            if (days > 0)
+                            {
+                                <div class="mt-2">
+                                    <span class="countdown-badge"><i class="bi bi-calendar-event"></i> @days days away</span>
+                                </div>
+                            }
+                        }
+                    </a>
                 </div>
-            </div>
-        }
-    </div>
-}
+            }
+        </div>
+    }
+</div>
+<div style="height:3rem;"></div>

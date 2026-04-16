@@ -15,30 +15,34 @@ public class HomeController(IWishlistService wishlistService) : Controller
     {
         var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId))
-        {
             return RedirectToAction("Login", "Account");
-        }
 
-        var wishlistSummaries = await wishlistService.GetDashboardWishlistsAsync(userId);
+        var firstName = User.FindFirstValue("FirstName") ?? "there";
+        var wishlists = await wishlistService.GetDashboardWishlistsAsync(userId);
+
+        var summaries = wishlists.Select(w => new WishlistSummary
+        {
+            Id = w.Id,
+            Name = w.Name,
+            RegistryType = w.RegistryType,
+            Visibility = w.Visibility,
+            ShareToken = w.ShareToken,
+            ItemCount = w.ItemCount,
+            Description = w.Description,
+            EventDate = w.EventDate,
+            CashFundGoal = w.CashFundGoal,
+            CashFundRaised = w.CashFundRaised
+        }).ToList();
+
         var model = new DashboardViewModel
         {
-            Wishlists = wishlistSummaries
-                .Select(w => new WishlistSummary
-                {
-                    Id = w.Id,
-                    Name = w.Name,
-                    ItemCount = w.ItemCount
-                })
-                .ToList()
+            FirstName = firstName,
+            TotalLists = summaries.Count,
+            TotalItems = summaries.Sum(s => s.ItemCount),
+            Wishlists = summaries
         };
 
         return View(model);
-    }
-
-    [Authorize]
-    public IActionResult Privacy()
-    {
-        return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

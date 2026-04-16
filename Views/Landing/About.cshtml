@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "About Us";
+}
+
+<section class="hero" style="padding:4rem 0;">
+    <div class="container text-center" style="position:relative;z-index:1;">
+        <h1 class="display-title mb-2">About MyWishList</h1>
+        <p class="lead mx-auto">We believe gift-giving should be joyful, not stressful.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width:750px;">
+        <h2 class="h4 mb-3">Our Mission</h2>
+        <p class="text-muted mb-4">MyWishList was born from a simple frustration: managing gift registries across dozens of stores is messy, confusing, and time-consuming. We built a platform where you can bring everything together — items from any store, cash funds for any goal, and one beautiful link to share.</p>
+
+        <h2 class="h4 mb-3">What We Believe</h2>
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card card-body text-center h-100">
+                    <i class="bi bi-heart-fill fs-2 mb-2 text-primary"></i>
+                    <h5 style="font-size:1rem;">Gift-Giving is Personal</h5>
+                    <p class="text-muted mb-0" style="font-size:0.9rem;">Every occasion is unique. Your list should reflect that.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-body text-center h-100">
+                    <i class="bi bi-lightning-fill fs-2 mb-2 text-primary"></i>
+                    <h5 style="font-size:1rem;">Simplicity Wins</h5>
+                    <p class="text-muted mb-0" style="font-size:0.9rem;">One list, one link. No complexity, no confusion.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-body text-center h-100">
+                    <i class="bi bi-globe2 fs-2 mb-2 text-primary"></i>
+                    <h5 style="font-size:1rem;">No Store Limits</h5>
+                    <p class="text-muted mb-0" style="font-size:0.9rem;">Your wishlist, your choice — from any store in the world.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-cta btn-lg">Join MyWishList Today</a>
+        </div>
+    </div>
+</section>
