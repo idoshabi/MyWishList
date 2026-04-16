@@ -12,8 +12,11 @@ variables:
   buildConfiguration: "Release"
   sdkVersion: "10.0.x"
   webProject: "MyWishList.Web.csproj"
+  webJobProject: "MyWishList.WebJobs/MyWishList.WebJobs.csproj"
   testProject: "MyWishList.Web.Tests/MyWishList.Web.Tests.csproj"
   publishDir: "$(Build.ArtifactStagingDirectory)/publish"
+  webJobDir: "$(Build.ArtifactStagingDirectory)/publish/app_data/jobs/continuous/add-item-processor"
+  deploymentZip: "$(Build.ArtifactStagingDirectory)/publish/site.zip"
   appName: "mywishlist-68210"
   azureSubscription: "MyWishList-Azure"
 
@@ -38,6 +41,7 @@ stages:
               command: "restore"
               projects: |
                 $(webProject)
+                $(webJobProject)
                 $(testProject)
 
           - task: DotNetCoreCLI@2
@@ -55,6 +59,13 @@ stages:
               arguments: "--configuration $(buildConfiguration) --no-restore"
 
           - task: DotNetCoreCLI@2
+            displayName: "Build webjob"
+            inputs:
+              command: "build"
+              projects: "$(webJobProject)"
+              arguments: "--configuration $(buildConfiguration) --no-restore"
+
+          - task: DotNetCoreCLI@2
             displayName: "Run tests"
             inputs:
               command: "test"
@@ -68,7 +79,25 @@ stages:
               publishWebProjects: false
               projects: "$(webProject)"
               arguments: "--configuration $(buildConfiguration) --no-build --no-restore --output $(publishDir)"
-              zipAfterPublish: true
+              zipAfterPublish: false
+
+          - task: DotNetCoreCLI@2
+            displayName: "Publish webjob"
+            inputs:
+              command: "publish"
+              publishWebProjects: false
+              projects: "$(webJobProject)"
+              arguments: "--configuration $(buildConfiguration) --no-build --no-restore --output $(webJobDir)"
+              zipAfterPublish: false
+
+          - task: ArchiveFiles@2
+            displayName: "Create deployment zip"
+            inputs:
+              rootFolderOrFile: "$(publishDir)"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(deploymentZip)"
+              replaceExistingArchive: true
 
           - task: PublishPipelineArtifact@1
             displayName: "Publish pipeline artifact"
@@ -103,4 +132,4 @@ stages:
                     azureSubscription: "$(azureSubscription)"
                     appType: "webApp"
                     appName: "$(appName)"
-                    package: "$(Pipeline.Workspace)/drop/**/*.zip"
+                    package: "$(Pipeline.Workspace)/drop/site.zip"
