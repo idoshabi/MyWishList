@@ -23,6 +23,7 @@ stages:
     jobs:
       - job: Build
         pool:
+          name: 'Default' # This ensures it uses your "IDO" agent
           vmImage: "ubuntu-latest"
         steps:
           - task: UseDotNet@2
@@ -84,6 +85,7 @@ stages:
         displayName: Deploy web app
         environment: "production"
         pool:
+          name: 'Default' # This ensures it uses your "IDO" agent
           vmImage: "ubuntu-latest"
         strategy:
           runOnce:
