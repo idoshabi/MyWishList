@@ -22,13 +22,9 @@
 
   <ItemGroup>
     <Compile Remove="MyWishList.Web.Tests\**\*.cs" />
-    <Compile Remove="MyWishList.WebJobs\**\*.cs" />
     <Content Remove="MyWishList.Web.Tests\**\*" />
-    <Content Remove="MyWishList.WebJobs\**\*" />
     <EmbeddedResource Remove="MyWishList.Web.Tests\**\*" />
-    <EmbeddedResource Remove="MyWishList.WebJobs\**\*" />
     <None Remove="MyWishList.Web.Tests\**\*" />
-    <None Remove="MyWishList.WebJobs\**\*" />
   </ItemGroup>
 
 </Project>

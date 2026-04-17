@@ -55,16 +55,6 @@ builder.Services
     });
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("FrontendDev", policy =>
-    {
-        policy.WithOrigins("http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
-});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -108,10 +98,7 @@ builder.Services.AddSingleton<IItemQueueService>(serviceProvider =>
     return new InMemoryItemQueueService();
 });
 
-if (string.IsNullOrWhiteSpace(storageQueueConnectionString))
-{
-    builder.Services.AddHostedService<AddItemQueueWebJob>();
-}
+builder.Services.AddHostedService<AddItemQueueWebJob>();
 
 var app = builder.Build();
 
@@ -121,9 +108,6 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-}
-else
-{
 }
 
 app.UseSwagger();
@@ -135,7 +119,6 @@ app.UseSwaggerUI(options =>
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors("FrontendDev");
 
 app.UseAuthentication();
 app.UseAuthorization();

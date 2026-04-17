@@ -1,6 +1,6 @@
 # MyWishList
 
-ASP.NET Core MVC wishlist app (MyRegistry-style MVP) using SQL Server.
+ASP.NET Core MVC wishlist app  using SQL Server.
 
 ## Features
 
@@ -28,29 +28,21 @@ ASP.NET Core MVC wishlist app (MyRegistry-style MVP) using SQL Server.
 - SQL Server (LocalDB default connection)
 - Cookie authentication
 
-## Run (Backend + Queue Worker + React Frontend)
+## Run
 
-1. Start backend API + MVC host:
-   - `dotnet run`
-   - default HTTP URL: `http://localhost:5167`
-2. If using Azure Storage queues, start the queue worker (WebJob host):
-   - `dotnet run --project MyWishList.WebJobs`
-3. In another terminal, start React UI:
-   - `cd frontend`
-   - `npm install`
-   - `npm run dev`
-4. Open the React app:
-   - `http://localhost:5173`
+```bash
+dotnet run
+```
 
-The React dev server proxies `/api/*` requests to `http://localhost:5167`.
+Default HTTP URL is printed by Kestrel (see `launchSettings.json`). Swagger UI: `/swagger`.
 
-### Queue processing behavior
+### Queue (add-item requests)
 
-- If `StorageQueue:ConnectionString` is configured, queue messages are intended to be processed by `MyWishList.WebJobs`.
-- If `StorageQueue:ConnectionString` is empty, the web app falls back to an in-memory queue worker for local development.
+- If `StorageQueue:ConnectionString` is set, the app uses Azure Storage Queues and processes messages in-process via `AddItemQueueWebJob`.
+- If it is empty, an in-memory queue is used for local development (same background worker).
 
 ## Build
 
-- Backend: `dotnet build`
-- WebJob: `dotnet build MyWishList.WebJobs/MyWishList.WebJobs.csproj`
-- Frontend: `cd frontend && npm run build`
+```bash
+dotnet build
+```
