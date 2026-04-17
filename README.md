@@ -2,6 +2,8 @@
 
 ASP.NET Core MVC wishlist app  using SQL Server.
 
+Link mywishlist-68210.azurewebsites.net
+Swagger mywishlist-68210.azurewebsites.net/swagger/index.html
 ## Features
 
 - User registration and login
