@@ -9,8 +9,10 @@ using MyWishList.Web.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var useInMemoryDatabase = builder.Configuration.GetValue<bool>("UseInMemoryDatabase")
-    || builder.Environment.IsEnvironment("Testing");
+    || builder.Environment.IsEnvironment("Testing")
+    || string.IsNullOrWhiteSpace(defaultConnectionString);
 var inMemoryDatabaseName = builder.Configuration["InMemoryDatabaseName"] ?? "MyWishListTestDb";
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -21,7 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         return;
     }
 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(defaultConnectionString);
 });
 
 builder.Services
