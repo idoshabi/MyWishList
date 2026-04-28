@@ -40,6 +40,8 @@ dotnet run
 
 Default HTTP URL is printed by Kestrel (see `launchSettings.json`). Swagger UI: `/swagger`.
 
+By default the app uses an **in-memory database** (no LocalDB/SQL Server required). For real SQL Server, set `UseInMemoryDatabase` to `false` (see `appsettings.Production.json`) and configure `ConnectionStrings:DefaultConnection`.
+
 ### Queue (add-item requests)
 
 - If `StorageQueue:ConnectionString` is set, the app uses Azure Storage Queues and processes messages in-process via `AddItemQueueWebJob`.
